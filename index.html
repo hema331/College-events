@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>College Event Registration Portal</title>
+
+<style>
+/* CSS DESIGN */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f1f4ff;
+    color: #333;
+}
+
+header {
+    background: linear-gradient(135deg, #302b91, #7566e8);
+    color: white;
+    text-align: center;
+    padding: 25px 15px;
+}
+
+header h1 {
+    margin: 0 0 10px;
+}
+
+nav {
+    background: #211d70;
+    padding: 15px;
+    text-align: center;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin: 12px;
+    font-weight: bold;
+}
+
+nav a:hover {
+    color: #ffd700;
+}
+
+.container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 20px;
+}
+
+section {
+    background: white;
+    padding: 22px;
+    margin: 20px 0;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px #0001;
+}
+
+h2 {
+    color: #302b91;
+}
+
+.controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+input, select {
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    margin: 7px 0;
+}
+
+.controls input,
+.controls select {
+    flex: 1;
+    min-width: 150px;
+}
+
+.events {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.event-card {
+    background: #f8f8ff;
+    padding: 18px;
+    border-radius: 10px;
+    border-left: 5px solid #5145cd;
+}
+
+.event-card h3 {
+    color: #302b91;
+}
+
+button {
+    background: #302b91;
+    color: white;
+    padding: 11px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #6259cf;
+}
+
+button:disabled {
+    background: #999;
+    cursor: not-allowed;
+}
+
+form input,
+form select {
+    width: 100%;
+    display: block;
+}
+
+form button {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.registration-card {
+    background: #f3f1ff;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 12px 0;
+    overflow-wrap: anywhere;
+}
+
+.cancel-btn {
+    background: #e63959;
+}
+
+.cancel-btn:hover {
+    background: #c82343;
+}
+
+#message {
+    font-weight: bold;
+}
+
+footer {
+    background: #211d70;
+    color: white;
+    text-align: center;
+    padding: 18px;
+    margin-top: 25px;
+}
+
+@media (max-width: 600px) {
+    nav a {
+        display: inline-block;
+        margin: 8px;
+    }
+
+    .container {
+        padding: 10px;
+    }
+
+    section {
+        padding: 15px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- HTML STRUCTURE -->
+
+<header>
+    <h1>🎓 College Event Registration Portal</h1>
+    <p>Learn • Participate • Grow</p>
+</header>
+
+<nav>
+    <a href="#home">Home</a>
+    <a href="#events">Events</a>
+    <a href="#register">Register</a>
+    <a href="#myregistrations">My Registrations</a>
+</nav>
+
+<div class="container">
+
+<section id="home">
+    <h2>Welcome to Our College Events!</h2>
+    <p>
+        Explore upcoming college events, showcase your talent,
+        and participate in exciting activities.
+    </p>
+</section>
+
+<section id="events">
+    <h2>📅 Upcoming Events</h2>
+
+    <div class="controls">
+        <input
+            type="text"
+            id="search"
+            placeholder="Search events by name..."
+        >
+
+        <select id="category">
+            <option value="">All Categories</option>
+            <option value="Technical">Technical</option>
+            <option value="Cultural">Cultural</option>
+            <option value="Sports">Sports</option>
+            <option value="Workshop">Workshop</option>
+        </select>
+
+        <input type="date" id="dateFilter">
+    </div>
+
+    <div class="events" id="eventList"></div>
+</section>
+
+<section id="register">
+    <h2>📝 Student Registration</h2>
+
+    <form id="registrationForm">
+
+        <label for="studentName">Student Name</label>
+        <input
+            type="text"
+            id="studentName"
+            placeholder="Enter your full name"
+            required
+        >
+
+        <label for="studentEmail">Student Email</label>
+        <input
+            type="email"
+            id="studentEmail"
+            placeholder="Enter your email address"
+            required
+        >
+
+        <label for="eventSelect">Select Event</label>
+        <select id="eventSelect" required>
+            <option value="">Select an event</option>
+        </select>
+
+        <button type="submit">Register Now</button>
+
+        <p id="message" aria-live="polite"></p>
+
+    </form>
+</section>
+
+<section id="myregistrations">
+    <h2>📋 My Registrations</h2>
+    <div id="registrationList"></div>
+</section>
+
+</div>
+
+<footer>
+    <p>© 2026 College Event Registration Portal</p>
+    <p>Learn • Participate • Grow</p>
+</footer>
+
+<script>
+// JAVASCRIPT FUNCTIONALITY
+
+const events = [
+    {
+        id: 1,
+        name: "Coding Competition",
+        category: "Technical",
+        date: "2026-11-10",
+        venue: "Computer Lab",
+        description: "Show your programming skills and solve coding challenges.",
+        capacity: 30
+    },
+    {
+        id: 2,
+        name: "Cultural Fest",
+        category: "Cultural",
+        date: "2026-11-15",
+        venue: "College Auditorium",
+        description: "Enjoy music, dance and cultural performances.",
+        capacity: 100
+    },
+    {
+        id: 3,
+        name: "Sports Meet",
+        category: "Sports",
+        date: "2026-11-20",
+        venue: "College Ground",
+        description: "Participate in exciting sports competitions.",
+        capacity: 50
+    },
+    {
+        id: 4,
+        name: "Web Development Workshop",
+        category: "Workshop",
+        date: "2026-11-25",
+        venue: "Seminar Hall",
+        description: "Learn HTML, CSS and JavaScript.",
+        capacity: 40
+    }
+];
+
+// Load saved registrations
+let registrations = [];
+
+try {
+    const savedData = JSON.parse(
+        localStorage.getItem("collegeRegistrations") || "[]"
+    );
+
+    if (Array.isArray(savedData)) {
+        registrations = savedData.filter(r =>
+            r &&
+            Number.isInteger(r.id) &&
+            Number.isInteger(r.eventId) &&
+            typeof r.name === "string" &&
+            typeof r.email === "string" &&
+            events.some(e => e.id === r.eventId)
+        );
+    }
+} catch (error) {
+    registrations = [];
+}
+
+function saveData() {
+    try {
+        localStorage.setItem(
+            "collegeRegistrations",
+            JSON.stringify(registrations)
+        );
+        return true;
+    } catch (error) {
+        alert("Unable to save data in this browser.");
+        return false;
+    }
+}
+
+// Display events
+function displayEvents() {
+    const search = document.getElementById("search")
+        .value.trim().toLowerCase();
+
+    const category = document.getElementById("category").value;
+    const date = document.getElementById("dateFilter").value;
+
+    const filteredEvents = events.filter(event =>
+        event.name.toLowerCase().includes(search) &&
+        (!category || event.category === category) &&
+        (!date || event.date === date)
+    );
+
+    const eventList = document.getElementById("eventList");
+    eventList.replaceChildren();
+
+    if (filteredEvents.length === 0) {
+        eventList.textContent = "No events found.";
+    }
+
+    filteredEvents.forEach(event => {
+        const count = registrations.filter(
+            r => r.eventId === event.id
+        ).length;
+
+        const card = document.createElement("div");
+        card.className = "event-card";
+
+        const title = document.createElement("h3");
+        title.textContent = event.name;
+
+        const categoryText = document.createElement("p");
+        categoryText.textContent = "Category: " + event.category;
+
+        const dateText = document.createElement("p");
+        dateText.textContent = "Date: " + event.date;
+
+        const venueText = document.createElement("p");
+        venueText.textContent = "Venue: " + event.venue;
+
+        const description = document.createElement("p");
+        description.textContent = event.description;
+
+        const countText = document.createElement("p");
+        countText.textContent =
+            "Registrations: " + count + " / " + event.capacity;
+
+        const button = document.createElement("button");
+        button.textContent = count >= event.capacity
+            ? "Event Full"
+            : "Register for Event";
+
+        button.disabled = count >= event.capacity;
+
+        button.addEventListener("click", () => {
+            document.getElementById("eventSelect").value =
+                String(event.id);
+
+            document.getElementById("register").scrollIntoView({
+                behavior: "smooth"
+            });
+        });
+
+        card.append(
+            title,
+            categoryText,
+            dateText,
+            venueText,
+            description,
+            countText,
+            button
+        );
+
+        eventList.appendChild(card);
+    });
+
+    updateEventOptions();
+}
+
+// Update registration dropdown
+function updateEventOptions() {
+    const select = document.getElementById("eventSelect");
+    const previousValue = select.value;
+
+    select.replaceChildren();
+
+    const firstOption = document.createElement("option");
+    firstOption.value = "";
+    firstOption.textContent = "Select an event";
+    select.appendChild(firstOption);
+
+    events.forEach(event => {
+        const count = registrations.filter(
+            r => r.eventId === event.id
+        ).length;
+
+        const option = document.createElement("option");
+        option.value = String(event.id);
+        option.textContent = event.name;
+
+        if (count >= event.capacity) {
+            option.disabled = true;
+            option.textContent += " (Full)";
+        }
+
+        select.appendChild(option);
+    });
+
+    if ([...select.options].some(
+        option => option.value === previousValue &&
+                  !option.disabled
+    )) {
+        select.value = previousValue;
+    }
+}
+
+// Register student
+document.getElementById("registrationForm")
+.addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const name = document.getElementById("studentName")
+        .value.trim();
+
+    const email = document.getElementById("studentEmail")
+        .value.trim().toLowerCase();
+
+    const eventId = Number(
+        document.getElementById("eventSelect").value
+    );
+
+    const message = document.getElementById("message");
+
+    const selectedEvent = events.find(
+        event => event.id === eventId
+    );
+
+    if (!name || !email || !selectedEvent) {
+        message.textContent = "Please fill in all fields.";
+        message.style.color = "red";
+        return;
+    }
+
+    // Prevent duplicate registrations
+    const duplicate = registrations.some(r =>
+        r.email.toLowerCase() === email &&
+        r.eventId === eventId
+    );
+
+    if (duplicate) {
+        message.textContent =
+            "You have already registered for this event!";
+        message.style.color = "red";
+        return;
+    }
+
+    // Check event capacity
+    const count = registrations.filter(
+        r => r.eventId === eventId
+    ).length;
+
+    if (count >= selectedEvent.capacity) {
+        message.textContent = "Sorry, this event is full!";
+        message.style.color = "red";
+        displayEvents();
+        return;
+    }
+
+    const registration = {
+        id: Date.now(),
+        name: name,
+        email: email,
+        eventId: eventId
+    };
+
+    registrations.push(registration);
+
+    if (!saveData()) {
+        registrations.pop();
+        return;
+    }
+
+    message.textContent = "Registration successful!";
+    message.style.color = "green";
+
+    this.reset();
+
+    displayEvents();
+    displayRegistrations();
+});
+
+// Display student registrations
+function displayRegistrations() {
+    const list = document.getElementById("registrationList");
+    list.replaceChildren();
+
+    if (registrations.length === 0) {
+        list.textContent = "No registrations yet.";
+        return;
+    }
+
+    registrations.forEach(registration => {
+        const event = events.find(
+            e => e.id === registration.eventId
+        );
+
+        if (!event) return;
+
+        const card = document.createElement("div");
+        card.className = "registration-card";
+
+        const title = document.createElement("h3");
+        title.textContent = event.name;
+
+        const student = document.createElement("p");
+        student.textContent = "Student: " + registration.name;
+
+        const email = document.createElement("p");
+        email.textContent = "Email: " + registration.email;
+
+        const date = document.createElement("p");
+        date.textContent = "Event Date: " + event.date;
+
+        const button = document.createElement("button");
+        button.className = "cancel-btn";
+        button.textContent = "Cancel Registration";
+
+        button.addEventListener("click", () => {
+            cancelRegistration(registration.id);
+        });
+
+        card.append(title, student, email, date, button);
+        list.appendChild(card);
+    });
+}
+
+// Cancel registration
+function cancelRegistration(id) {
+    if (!confirm("Are you sure you want to cancel registration?")) {
+        return;
+    }
+
+    const previousRegistrations = [...registrations];
+
+    registrations = registrations.filter(
+        r => r.id !== id
+    );
+
+    if (!saveData()) {
+        registrations = previousRegistrations;
+        return;
+    }
+
+    document.getElementById("message").textContent =
+        "Registration cancelled successfully!";
+
+    document.getElementById("message").style.color = "green";
+
+    displayEvents();
+    displayRegistrations();
+}
+
+// Search and filter
+document.getElementById("search")
+    .addEventListener("input", displayEvents);
+
+document.getElementById("category")
+    .addEventListener("change", displayEvents);
+
+document.getElementById("dateFilter")
+    .addEventListener("change", displayEvents);
+
+// Initial display
+displayEvents();
+displayRegistrations();
+
+</script>
+
+</body>
+  </html>
